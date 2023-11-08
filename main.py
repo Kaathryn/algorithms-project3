@@ -106,3 +106,92 @@ plt.show()
 #3
 print("\nProblem 3")
 
+#Dijkstra's Algorithm
+def dijkstra(graph, initial):
+  visited = {initial: 0}
+  path = {}
+
+  nodes = set(graph.nodes)
+
+  while nodes: 
+    min_node = None
+    for node in nodes:
+      if node in visited:
+        if min_node is None:
+          min_node = node
+        elif visited[node] < visited[min_node]:
+          min_node = node
+
+    if min_node is None:
+      break
+
+    nodes.remove(min_node)
+    current_weight = visited[min_node]
+
+    for edge in graph[min_node]:
+      weight = current_weight + graph[min_node][edge]['weight']
+      if edge not in visited or weight < visited[edge]:
+        visited[edge] = weight
+        path[edge] = min_node
+
+  return visited, path
+
+#Part 3 Graph
+G3 = nx.Graph()
+
+G3edges = [('A', 'B', 22), ('A', 'C', 9), ('A', 'D', 12), 
+           ('B', 'C', 35), ('C', 'D', 4), ('C', 'E', 65),
+           ('D', 'E', 33), ('B', 'F', 36), ('C', 'F', 42),
+           ('E', 'F', 18), ('F', 'G', 39), ('E', 'G', 23),
+           ('B', 'H', 34), ('F', 'H', 24), ('G', 'H', 25),
+           ('D', 'I', 30), ('G', 'I', 21), ('H', 'I', 19)]
+
+pos = {'A':(0,2), 'B':(1,5), 'C':(1,2), 'D':(1,-1),
+       'E':(2,1), 'F':(3,3), 'G':(4,1), 'H':(5,5),
+       'I':(5,-1)}
+
+
+G3.add_weighted_edges_from(G3edges)
+
+G3.distance = {('A', 'B'): 22, ('A', 'C'): 9, ('A', 'D'): 12,}
+
+edge_labels = nx.get_edge_attributes(G3, "weight")
+
+nx.draw(G3, pos, with_labels = True, node_size = 700)
+nx.draw_networkx_edge_labels(G3, pos, edge_labels)
+plt.show()
+
+
+#a)
+print("\nDijkstra's Shortest Path")
+v, path = dijkstra(G3, 'A')
+print('Visited: ', v)
+print('Path :', path)
+
+#b) Minimum spanning tree for a connected weighted graph
+MST = nx.minimum_spanning_tree(G3)
+
+edge_labels = nx.get_edge_attributes(MST, "weight")
+
+nx.draw(MST, pos, with_labels = True, node_size = 700)
+nx.draw_networkx_edge_labels(MST, pos, edge_labels)
+plt.show()
+
+#d) If the graph has an edge with a negative weight, can you apply 
+#   Dijkstra’s algorithm to find a shortest path tree?
+G3Test = nx.Graph()
+
+G3TestEdges = [('A', 'B', -22), ('A', 'C', 9), ('A', 'D', 12), 
+           ('B', 'C', 35), ('C', 'D', 4), ('C', 'E', 65),
+           ('D', 'E', 33), ('B', 'F', -36), ('C', 'F', 42),
+           ('E', 'F', 18), ('F', 'G', 39), ('E', 'G', 23),
+           ('B', 'H', 34), ('F', 'H', 24), ('G', 'H', 25),
+           ('D', 'I', 30), ('G', 'I', 21), ('H', 'I', 19)]
+
+G3Test.add_weighted_edges_from(G3TestEdges)
+
+print("\nDijkstra's Algorithm on graph with a negative weight")
+v, path = dijkstra(G3, 'A')
+print('Visited: ', v)
+print('Path :', path)
+
